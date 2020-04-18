@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View,StyleSheet, FlatList} from 'react-native';
+import { Text, View,StyleSheet, FlatList, Dimensions} from 'react-native';
 import Rectangle from './Rectangle';
 import { Accelerometer } from 'expo-sensors';
 
 export default function App() {
-  const [data, setData] = useState({});
-  const [xAcceler, setxAcceler] = useState(0);
-  const [yAcceler, setyAcceler] = useState(0);
-  const [currentX, setCurrentX] = useState(200);
-  const [currentY, setCurrentY] = useState(700);
+  let [data, setData] = useState({});
+  const { width, height } = Dimensions.get('window');
+  // console.log("width:"+width+" heig:"+height);
+  let [sumaX, setSumaX] = useState(250);
+  let [sumaY, setSumaY] = useState(150);
 
   useEffect(() => {
     _toggle();
@@ -28,29 +28,18 @@ export default function App() {
     }
   };
 
-  const _slow = () => {
-    Accelerometer.setUpdateInterval(1000);
-  };
 
-  const _fast = () => {
-    Accelerometer.setUpdateInterval(16);
-  };
-
-  const _subscribe = () => {
+  let _subscribe = () => {
     this._subscription = Accelerometer.addListener(accelerometerData => {
       setData(accelerometerData);
-      let currX=Number(JSON.stringify(accelerometerData.x));
-      let currY=Number(JSON.stringify(accelerometerData.y));
-      // console.log("current x change: "+Math.round(currX*10));
-      // console.log("current y change: "+Math.round(currY*10));
-      setCurrentX(currentX+Math.round(currX*10));
-      setCurrentY(currentY+Math.round(currY*10));
-      console.log(currentX);
-      console.log(currentY);
+      let currX=Number(JSON.stringify(accelerometerData.x))*10;
+      let currY=Number(JSON.stringify(accelerometerData.y))*10;
+      setSumaX(sumaX += currX);
+      setSumaY(sumaY += currY);
     });
   };
 
-  const _unsubscribe = () => {
+  let _unsubscribe = () => {
     this._subscription && this._subscription.remove();
     this._subscription = null;
   };
@@ -58,20 +47,8 @@ export default function App() {
 
 
 
-  // const tableList= [ {key:'1', colorProps:"red"},{key:'2', colorProps: "red"},{key:'3', colorProps: "red"},
-  //                   {key:'4', colorProps:"red"},{key:'5', colorProps: "green"},{key:'6', colorProps: "green"},
-  //                   {key:'7', colorProps:"green"},{key:'8', colorProps: "red"},{key:'9', colorProps: "red"},
-  //                   {key:'10', colorProps:"red"},{key:'11', colorProps: "red"},{key:'12', colorProps: "red"},
-  //                   {key:'13', colorProps:"red"},{key:'14', colorProps: "green"},{key:'15', colorProps: "green"},
-  //                   {key:'16', colorProps:"green"},{key:'17', colorProps: "red"},{key:'18', colorProps: "red"},
-  //                   {key:'19', colorProps:"red"},{key:'20', colorProps: "red"},{key:'21', colorProps: "red"},
-  //                   {key:'22', colorProps:"red"},{key:'23', colorProps: "green"},{key:'24', colorProps: "green"},
-  //                   {key:'25', colorProps:"green"},{key:'26', colorProps: "red"},{key:'27', colorProps: "red"},
-  //                   {key:'28', colorProps:"red"},{key:'29', colorProps: "red"},{key:'30', colorProps: "red"},
-  //                   {key:'31', colorProps:"red"},{key:'32', colorProps: "green"},{key:'33', colorProps: "green"},
-  //                   {key:'34', colorProps:"green"},{key:'35', colorProps: "red"},
-  // ];
-  const tableList = [];
+
+  let tableList = [];
   let { x, y, z } = data;
   let i;
   for (i = 0; i < 50; i++) {
@@ -89,21 +66,16 @@ export default function App() {
             <Rectangle colorProps={item.colorProps} idProp={item.key}/>
           )}
         />
-          <View 
-            style={{
-              position: 'absolute',
-              left: currentX,
-              top: currentY,
-              width: 30,
-              height: 30,
-              backgroundColor: "orange",
-            }}>
-          </View>
-
-
-
-
-
+        <View 
+          style={{
+            position: 'absolute',
+            left: sumaX,
+            top: sumaY,
+            width: 30,
+            height: 30,
+            backgroundColor: "orange",
+          }}>
+        </View>
       </View>
   );
 }
