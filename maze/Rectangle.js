@@ -1,13 +1,15 @@
 import React, {useState} from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { Text, View, StyleSheet, Button, TouchableOpacity } from 'react-native';
 
-export default function Rectangle({colorProps}) {
+export default function Rectangle({colorProps, idProp}) {
     const [color, setColor] = useState(colorProps);
+    const [idp, setId]= useState(idProp)
     const styles = StyleSheet.create({
         square: {
-            width: 100,
-            height: 100,
+            width: 80,
+            height: 80,
             backgroundColor: color,
+            padding: 0
         },
       });
     function changeColor(){
@@ -16,13 +18,14 @@ export default function Rectangle({colorProps}) {
     }
     return (
     <View>
-      <View style={styles.square} />
-      <Button
-          title="press"
-          onPress={() => {
+    <TouchableOpacity
+        onPress={() => {
             changeColor();
-            console.log(color);
-          }}/>
+            console.log(color, idp);
+        }}>
+        <View style={styles.square} />
+    </TouchableOpacity>
+
     </View>
   );
 }
