@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View,StyleSheet, FlatList, Dimensions} from 'react-native';
+import { Text, View,StyleSheet, FlatList, Dimensions, Alert} from 'react-native';
 import Rectangle from './Rectangle';
 import { Accelerometer } from 'expo-sensors';
 
@@ -29,30 +29,32 @@ export default function App() {
   };
 
   _checkIfOnRed = () => {
-      let verticalCounter=0;
-      for(let i=80; i<800; i+80){
-        if(sumaY+15 <i)
-          break
-        else
-          verticalCounter++;
+    let verticalCounter=0;
+    let i=80;
+    while (i< 800){
+      if(sumaY+15 < i){
+        break;
       }
-      let horizontalCounter=0;
-      for(let j=80; j<400;j++){
-        if(sumaX+15<j)
-          break
-        else
-          horizontalCounter++;
+      else{
+        verticalCounter++;
       }
-      let boxId=(verticalCounter*5)+horizontalCounter;
-      console.log("boxId"+ boxId);
-  }
+      i+=80;
+    }
 
-  let _returnVerticalBoxCount = () =>{
-
-  }
-
-  let _returnHorizontalBoxCount = () =>{
-    
+    let horizontalCounter=0;
+    let j=80;
+    while (j< 400){
+      if(sumaX+15 < j){
+        break;
+      }
+      else{
+        horizontalCounter++;
+      }
+      j+=80;
+    }
+    let currentBox = tableList[verticalCounter*5+horizontalCounter];
+    if(currentBox.colorProps=="red")
+      console.log(currentBox.colorProps);
   }
 
 
@@ -63,54 +65,7 @@ export default function App() {
       let currY=Number(JSON.stringify(accelerometerData.y))*10;
       setSumaX(sumaX += currX);
       setSumaY(sumaY += currY);
-
-      let verticalCounter=0;
-      let i=80;
-      while (i< 800){
-        if(sumaY+15 < i){
-          break;
-        }
-        else{
-          verticalCounter++;
-        }
-        i+=80;
-      }
-      // console.log("vcount:" + verticalCounter);
-      
-      let horizontalCounter=0;
-      let j=80;
-      while (j< 400){
-        if(sumaX+15 < j){
-          break;
-        }
-        else{
-          horizontalCounter++;
-        }
-        j+=80;
-      }
-      // console.log("hcount:" + horizontalCounter);
-      let boxId = verticalCounter*5+horizontalCounter;
-      // console.log("boxId:" + boxId);
-      let currentBox = tableList[boxId];
-      if(currentBox.colorProps=="red")
-        console.log(currentBox.colorProps);
-      
-      // let horizontalCounter=0;
-      // let j =80;
-      // for(j; j<400;j++){
-      //   if(sumaX+15<j){
-      //     break
-      //   }
-      //   else{
-      //     horizontalCounter++;
-      //   }
-      // }
-      // let boxId=(verticalCounter*5)+horizontalCounter;
-      // console.log("boxId"+ boxId);
-
-
-
-
+      _checkIfOnRed();
     });
   };
 
@@ -119,10 +74,6 @@ export default function App() {
     this._subscription = null;
   };
   
-
-
-
-
   let tableList = [];
   let { x, y, z } = data;
   let i;
@@ -131,6 +82,7 @@ export default function App() {
   let color=(rnd == 1) ? "green" : "red";
   tableList.push({key: i, colorProps:color})
   }
+  
   return (
       <View>
         <Text>x: {round(x)} y: {round(y)} z: {round(z)}</Text>
