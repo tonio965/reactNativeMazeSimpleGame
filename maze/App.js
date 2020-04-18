@@ -28,6 +28,33 @@ export default function App() {
     }
   };
 
+  _checkIfOnRed = () => {
+      let verticalCounter=0;
+      for(let i=80; i<800; i+80){
+        if(sumaY+15 <i)
+          break
+        else
+          verticalCounter++;
+      }
+      let horizontalCounter=0;
+      for(let j=80; j<400;j++){
+        if(sumaX+15<j)
+          break
+        else
+          horizontalCounter++;
+      }
+      let boxId=(verticalCounter*5)+horizontalCounter;
+      console.log("boxId"+ boxId);
+  }
+
+  let _returnVerticalBoxCount = () =>{
+
+  }
+
+  let _returnHorizontalBoxCount = () =>{
+    
+  }
+
 
   let _subscribe = () => {
     this._subscription = Accelerometer.addListener(accelerometerData => {
@@ -36,6 +63,54 @@ export default function App() {
       let currY=Number(JSON.stringify(accelerometerData.y))*10;
       setSumaX(sumaX += currX);
       setSumaY(sumaY += currY);
+
+      let verticalCounter=0;
+      let i=80;
+      while (i< 800){
+        if(sumaY+15 < i){
+          break;
+        }
+        else{
+          verticalCounter++;
+        }
+        i+=80;
+      }
+      // console.log("vcount:" + verticalCounter);
+      
+      let horizontalCounter=0;
+      let j=80;
+      while (j< 400){
+        if(sumaX+15 < j){
+          break;
+        }
+        else{
+          horizontalCounter++;
+        }
+        j+=80;
+      }
+      // console.log("hcount:" + horizontalCounter);
+      let boxId = verticalCounter*5+horizontalCounter;
+      // console.log("boxId:" + boxId);
+      let currentBox = tableList[boxId];
+      if(currentBox.colorProps=="red")
+        console.log(currentBox.colorProps);
+      
+      // let horizontalCounter=0;
+      // let j =80;
+      // for(j; j<400;j++){
+      //   if(sumaX+15<j){
+      //     break
+      //   }
+      //   else{
+      //     horizontalCounter++;
+      //   }
+      // }
+      // let boxId=(verticalCounter*5)+horizontalCounter;
+      // console.log("boxId"+ boxId);
+
+
+
+
     });
   };
 
