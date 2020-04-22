@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View,StyleSheet, FlatList, Dimensions, Alert} from 'react-native';
+import { Text, View,StyleSheet, FlatList, Dimensions, Alert, ImageBackground, Image} from 'react-native';
 import Rectangle from './Rectangle';
 import { Accelerometer } from 'expo-sensors';
 import useForceUpdate from 'use-force-update';
@@ -8,30 +8,27 @@ export default function App() {
   let [data, setData] = useState({});
   const { width, height } = Dimensions.get('window');
   // console.log("width:"+width+" heig:"+height);
-  let [sumaX, setSumaX] = useState(250);
-  let [sumaY, setSumaY] = useState(150);
+  let [sumaX, setSumaX] = useState(50);
+  let [sumaY, setSumaY] = useState(750);
   let [tableList,setTableList] = useState([]);
   let [myColor, setMyColor]= useState("green");
-  const forceUpdate = useForceUpdate();
-
-
+  let [isLive, setIsLive] =useState("true");
+  let [currentTile, setCurrentTile] = useState(45);
 
   useEffect(() => {
-    let tempArr=[];
-    let i;
-    for (i = 0; i < 50; i++) {
-    let rnd = Math.floor(Math.random() * (2 - 0)) + 0;
-    let color=(rnd == 1) ? "green" : "red";
-    tempArr.push({key: i, colorProps:color});
-    }
+    let tempArr=[{key: 0, colorProps:"yellow"},{key: 1, colorProps:"green"},{key: 2, colorProps:"green"},{key: 3, colorProps:"red"},{key: 4, colorProps:"red"},
+                  {key: 5, colorProps:"red"},{key: 6, colorProps:"red"},{key: 7, colorProps:"green"},{key: 8, colorProps:"red"},{key: 9, colorProps:"red"},
+                  {key: 10, colorProps:"red"},{key: 11, colorProps:"red"},{key: 12, colorProps:"green"},{key: 13, colorProps:"red"},{key: 14, colorProps:"red"},
+                  {key: 15, colorProps:"red"},{key: 16, colorProps:"red"},{key: 17, colorProps:"green"},{key: 18, colorProps:"green"},{key: 19, colorProps:"green"},
+                  {key: 20, colorProps:"red"},{key: 21, colorProps:"red"},{key: 22, colorProps:"red"},{key: 23, colorProps:"red"},{key: 24, colorProps:"green"},
+                  {key: 25, colorProps:"red"},{key: 26, colorProps:"red"},{key: 27, colorProps:"red"},{key: 28, colorProps:"red"},{key: 29, colorProps:"green"},
+                  {key: 30, colorProps:"red"},{key: 31, colorProps:"red"},{key: 32, colorProps:"red"},{key: 33, colorProps:"red"},{key: 34, colorProps:"green"},
+                  {key: 35, colorProps:"red"},{key: 36, colorProps:"green"},{key: 37, colorProps:"green"},{key: 38, colorProps:"green"},{key: 39, colorProps:"green"},
+                  {key: 40, colorProps:"red"},{key: 41, colorProps:"green"},{key: 42, colorProps:"red"},{key: 43, colorProps:"red"},{key: 44, colorProps:"red"},
+                  {key: 45, colorProps:"green"},{key: 46, colorProps:"green"},{key: 47, colorProps:"red"},{key: 48, colorProps:"red"},{key: 49, colorProps:"red"},];
     setTableList(tempArr);
-    // console.log(tableList.toString());
 
     _toggle();
-  }, []);
-
-  useEffect(() => {
-
   }, []);
 
   useEffect(() => {
@@ -48,58 +45,80 @@ export default function App() {
     }
   };
 
-  _checkIfOnRed = () => {
-    let verticalCounter=0;
-    let i=80;
-    while (i< 800){
-      if(sumaY+15 < i){
-        break;
-      }
-      else{
-        verticalCounter++;
-      }
-      i+=80;
-    }
 
-    let horizontalCounter=0;
-    let j=80;
-    while (j< 400){
-      if(sumaX+15 < j){
-        break;
+  _checkIfOnRed = () => {
+    if(isLive=="true"){
+      let verticalCounter=0;
+      let i=80;
+      while (i< 800){
+        if(sumaY+20 < i){
+          break;
+        }
+        else{
+          verticalCounter++;
+        }
+        i+=80;
       }
-      else{
-        horizontalCounter++;
+      
+
+      let horizontalCounter=0;
+      let j=80;
+      while (j< 400){
+        if(sumaX+20 < j){
+          break;
+        }
+        else{
+          horizontalCounter++;
+        }
+        j+=80;
       }
-      j+=80;
-    }
-    let currentBox = tableList[verticalCounter*5+horizontalCounter];
-    if(currentBox.colorProps=="green"){
-      currentBox.colorProps="yellow";
-      console.log("change to blue");
-      setTableList((previousList)=> {
-        let newList = previousList;
-        newList[verticalCounter*5+horizontalCounter].colorProps="blue";
-        setMyColor="yellow";
-        forceUpdate();
-        return newList;
-      })
-      console.log(JSON.stringify(tableList));
-      // [verticalCounter*5+horizontalCounter]=currentBox; // o ten index chce 
-    }
+      let currentBox = tableList[verticalCounter*5+horizontalCounter];
+      setCurrentTile(verticalCounter*5+horizontalCounter);
+      if(currentBox.key==0){
+        _toggle();
+        Alert.alert(
+          "koniec",
+          "elo",
+          [ ],
+        )
+      }
+      if(currentBox.colorProps=="green"){
+        setTableList(previousList=> {
+
+          let newList = previousList;
+          for( let i=0; i<newList.length; i++){
+            if(newList[i].colorProps!== "green" && newList[i].colorProps!== "red" &&  newList[i].colorProps!== "yellow")
+              newList[i].colorProps= "green";
+          }
+          newList[currentTile].colorProps="aquamarine";
+          return newList;
+
+        })
+      }
+      if(currentBox.colorProps=="red"){
+        _toggle();
+        Alert.alert(
+          "out of bounds",
+          "elo",
+          [ ],
+        )
+      }
 
 
 
   }
+}
 
 
   let _subscribe = () => {
     this._subscription = Accelerometer.addListener(accelerometerData => {
-      setData(accelerometerData);
-      let currX=Number(JSON.stringify(accelerometerData.x))*10;
-      let currY=Number(JSON.stringify(accelerometerData.y))*10;
-      setSumaX(sumaX += currX);
-      setSumaY(sumaY += currY);
-      _checkIfOnRed();
+      if(isLive=="true")
+        setData(accelerometerData);
+        let currX=Number(JSON.stringify(accelerometerData.x))*10;
+        let currY=Number(JSON.stringify(accelerometerData.y))*10;
+        setSumaX(sumaX -= currX);
+        setSumaY(sumaY += currY);
+        _checkIfOnRed();
     });
   };
 
@@ -132,16 +151,17 @@ export default function App() {
           </View>
           )}
         />
-        <View 
+        <Image 
+          source = { require('./assets/jajo.gif')}
           style={{
             position: 'absolute',
             left: sumaX,
             top: sumaY,
-            width: 30,
-            height: 30,
-            backgroundColor: "orange",
+            width: 40,
+            height: 40,
+            // backgroundColor: "orange",
           }}>
-        </View>
+        </Image>
       </View>
   );
 }
@@ -153,6 +173,8 @@ function round(n) {
 
   return Math.floor(n * 100) / 100;
 }
+
+
 const styles = StyleSheet.create({
   container: {
     marginTop: 50,
