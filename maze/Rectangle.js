@@ -16,6 +16,10 @@ export default function Rectangle({colorProps, idProp}) {
         const newColor = "yellow";
         setColor(newColor);
     }
+    function changeColorState(){
+        const newColor = "yellow";
+        setColor(newColor);
+    }
     return (
     <View>
     <TouchableOpacity
